@@ -1,0 +1,58 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Scan {
+  id            String         @id @default(cuid())
+  status        String         @default("pending") // pending, completed, failed
+  images        String         @default("") // Comma-separated list of image URLs
+  notifications Notification[]
+  thread        Thread?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model Notification {
+  id            String   @id @default(cuid())
+  scanId        String
+  userId        String
+  title         String
+  message       String
+  deliveryState String   @default("pending") // pending, sent, failed
+  read          Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  scan          Scan     @relation(fields: [scanId], references: [id], onDelete: Cascade)
+
+  @@index([scanId, createdAt])
+  @@index([read, createdAt])
+}
+
+model Thread {
+  id        String    @id @default(cuid())
+  scanId    String    @unique
+  patientId String
+  clinicId  String
+  messages  Message[]
+  scan      Scan      @relation(fields: [scanId], references: [id], onDelete: Cascade)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  threadId  String
+  content   String
+  sender    String   // patient, dentist
+  createdAt DateTime @default(now())
+
+  thread    Thread   @relation(fields: [threadId], references: [id], onDelete: Cascade)
+
+  @@index([threadId, createdAt])
+}

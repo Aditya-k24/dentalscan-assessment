@@ -1,0 +1,22 @@
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-file:./prisma/dev.db}
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: dentalscan
+      POSTGRES_USER: dentalscan
+      POSTGRES_PASSWORD: dentalscan
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dentalscan -d dentalscan"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    profiles: ["pg"]
