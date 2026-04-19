@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import StepIllustration from "@/components/scanning/StepIllustration";
 
 const STEP_META = [
@@ -31,7 +31,7 @@ const STEP_META = [
   },
 ];
 
-const AUTO_DISMISS_MS = 3500;
+const AUTO_DISMISS_MS = 2000;
 
 interface StepPreviewProps {
   step: number;
@@ -42,7 +42,14 @@ export default function StepPreview({ step, onDismiss }: StepPreviewProps) {
   const [progress, setProgress] = useState(0);
   const meta = STEP_META[step] ?? STEP_META[0];
 
-  // Auto-dismiss with progress bar
+  // Keep a stable ref so the RAF closure always calls the latest onDismiss
+  // without being listed as a dep (which would restart the timer every re-render)
+  const onDismissRef = useRef(onDismiss);
+  onDismissRef.current = onDismiss;
+
+  // Track the LATEST scheduled RAF id so cleanup actually cancels it
+  const rafIdRef = useRef(0);
+
   useEffect(() => {
     setProgress(0);
     const start = performance.now();
@@ -52,15 +59,15 @@ export default function StepPreview({ step, onDismiss }: StepPreviewProps) {
       const pct = Math.min(elapsed / AUTO_DISMISS_MS, 1);
       setProgress(pct);
       if (pct < 1) {
-        requestAnimationFrame(tick);
+        rafIdRef.current = requestAnimationFrame(tick);
       } else {
-        onDismiss();
+        onDismissRef.current();
       }
     }
 
-    const raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [step, onDismiss]);
+    rafIdRef.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafIdRef.current);
+  }, [step]); // only restart when the step changes, not on every parent re-render
 
   return (
     <div

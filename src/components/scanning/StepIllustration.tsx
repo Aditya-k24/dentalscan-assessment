@@ -81,8 +81,8 @@ function LeftSideView() {
         }
         .turn-anim { animation: turn-left 2s ease-in-out infinite; }
         @keyframes arrow-left {
-          0%,100% { transform: translateX(0); }
-          50%      { transform: translateX(-5px); }
+          0%,100% { opacity: 1; transform: scale(1); transform-origin: 68px 136px; transform-box: fill-box; }
+          50%      { opacity: 0.55; transform: scale(0.93); transform-origin: 68px 136px; transform-box: fill-box; }
         }
       `}</style>
       <g className="turn-anim">
@@ -97,9 +97,10 @@ function LeftSideView() {
         <GuideOval />
         <path d="M47 82 Q58 79 68 82 Q78 79 89 82" fill="none" stroke="#64748b" strokeWidth="1.5" />
       </g>
+      {/* Horizontal rotation arc below chin — shows head turning left */}
       <g style={{ animation: "arrow-left 1.4s ease-in-out infinite" }}>
-        <path d="M22 124 L10 114 L22 104" fill="none" stroke="#22d3ee" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-        <line x1="10" y1="114" x2="36" y2="114" stroke="#22d3ee" strokeWidth="2.5" strokeLinecap="round" />
+        <path d="M 88,136 Q 68,150 48,136" fill="none" stroke="#22d3ee" strokeWidth="2.5" strokeLinecap="round" />
+        <path d="M 56,141 L 48,136 L 56,131" fill="none" stroke="#22d3ee" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
       </g>
       <text x="68" y="152" textAnchor="middle" fill="#64748b" fontSize="9.5" fontFamily="sans-serif">Turn left · pull left cheek back</text>
     </svg>
@@ -116,8 +117,8 @@ function RightSideView() {
         }
         .turn-anim { animation: turn-right 2s ease-in-out infinite; }
         @keyframes arrow-right {
-          0%,100% { transform: translateX(0); }
-          50%      { transform: translateX(5px); }
+          0%,100% { opacity: 1; transform: scale(1); transform-origin: 68px 136px; transform-box: fill-box; }
+          50%      { opacity: 0.55; transform: scale(0.93); transform-origin: 68px 136px; transform-box: fill-box; }
         }
       `}</style>
       <g className="turn-anim">
@@ -132,9 +133,10 @@ function RightSideView() {
         <GuideOval />
         <path d="M47 82 Q58 79 68 82 Q78 79 89 82" fill="none" stroke="#64748b" strokeWidth="1.5" />
       </g>
+      {/* Horizontal rotation arc below chin — shows head turning right */}
       <g style={{ animation: "arrow-right 1.4s ease-in-out infinite" }}>
-        <path d="M114 124 L126 114 L114 104" fill="none" stroke="#22d3ee" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-        <line x1="126" y1="114" x2="100" y2="114" stroke="#22d3ee" strokeWidth="2.5" strokeLinecap="round" />
+        <path d="M 48,136 Q 68,150 88,136" fill="none" stroke="#22d3ee" strokeWidth="2.5" strokeLinecap="round" />
+        <path d="M 80,141 L 88,136 L 80,131" fill="none" stroke="#22d3ee" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
       </g>
       <text x="68" y="152" textAnchor="middle" fill="#64748b" fontSize="9.5" fontFamily="sans-serif">Turn right · pull right cheek back</text>
     </svg>
@@ -145,28 +147,30 @@ function UpperTeethView() {
   return (
     <svg viewBox="0 0 136 160" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <style>{`
-        @keyframes open-wide-upper {
-          0%,40%,100% { transform: scaleY(1); transform-origin: 68px 84px; transform-box: fill-box; }
-          20%          { transform: scaleY(1.2); transform-origin: 68px 84px; transform-box: fill-box; }
+        @keyframes upper-lip-curl {
+          0%,40%,100% { transform: translateY(0); }
+          20%          { transform: translateY(-8px); }
         }
-        .upper-anim { animation: open-wide-upper 1.8s ease-in-out infinite; }
+        .upper-anim { animation: upper-lip-curl 1.8s ease-in-out infinite; }
         @keyframes arrow-down {
           0%,100% { transform: translateY(0); }
           50%      { transform: translateY(4px); }
         }
       `}</style>
       <ellipse cx="68" cy="74" rx="46" ry="58" fill="#111827" stroke="#06b6d4" strokeWidth="2" />
+      {/* Static: mouth cavity and guide oval stay fixed */}
+      <path d="M44 82 Q68 112 92 82" fill="#050d1a" />
+      <path d="M44 82 L92 82" stroke="#475569" strokeWidth="1" />
+      <GuideOval wide upper />
+      {/* Animated: upper teeth + upper lip curl upward */}
       <g className="upper-anim">
-        <path d="M44 82 Q68 112 92 82" fill="#050d1a" />
-        <path d="M44 82 L92 82" stroke="#475569" strokeWidth="1" />
         <Teeth upperOnly wide />
-        <GuideOval wide upper />
         <path d="M44 82 Q56 77 68 82 Q80 77 92 82" fill="none" stroke="#64748b" strokeWidth="1.5" />
       </g>
       <g style={{ animation: "arrow-down 1.4s ease-in-out infinite" }}>
-        <text x="68" y="148" textAnchor="middle" fill="#94a3b8" fontSize="9" fontFamily="sans-serif">tilt phone ↓</text>
+        <text x="68" y="112" textAnchor="middle" fill="#94a3b8" fontSize="9" fontFamily="sans-serif">tilt phone ↓</text>
       </g>
-      <text x="68" y="158" textAnchor="middle" fill="#64748b" fontSize="9.5" fontFamily="sans-serif">Curl upper lip up · show full arch</text>
+      <text x="68" y="152" textAnchor="middle" fill="#64748b" fontSize="9.5" fontFamily="sans-serif">Curl upper lip up · show full arch</text>
     </svg>
   );
 }
@@ -175,22 +179,24 @@ function LowerTeethView() {
   return (
     <svg viewBox="0 0 136 165" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <style>{`
-        @keyframes open-wide-lower {
-          0%,40%,100% { transform: scaleY(1); transform-origin: 68px 84px; transform-box: fill-box; }
-          20%          { transform: scaleY(1.2); transform-origin: 68px 84px; transform-box: fill-box; }
+        @keyframes lower-jaw-drop {
+          0%,40%,100% { transform: translateY(0); }
+          20%          { transform: translateY(8px); }
         }
-        .lower-anim { animation: open-wide-lower 1.8s ease-in-out infinite; }
+        .lower-anim { animation: lower-jaw-drop 1.8s ease-in-out infinite; }
         @keyframes arrow-up {
           0%,100% { transform: translateY(0); }
           50%      { transform: translateY(-4px); }
         }
       `}</style>
       <ellipse cx="68" cy="74" rx="46" ry="58" fill="#111827" stroke="#06b6d4" strokeWidth="2" />
+      {/* Static: mouth cavity and guide oval stay fixed */}
+      <path d="M44 82 Q68 112 92 82" fill="#050d1a" />
+      <path d="M44 82 L92 82" stroke="#475569" strokeWidth="1" />
+      <GuideOval wide />
+      {/* Animated: lower teeth + lower lip drop downward */}
       <g className="lower-anim">
-        <path d="M44 82 Q68 112 92 82" fill="#050d1a" />
-        <path d="M44 82 L92 82" stroke="#475569" strokeWidth="1" />
         <Teeth lowerOnly wide />
-        <GuideOval wide />
         <path d="M44 82 Q56 87 68 82 Q80 87 92 82" fill="none" stroke="#64748b" strokeWidth="1.5" />
       </g>
       <g style={{ animation: "arrow-up 1.4s ease-in-out infinite" }}>

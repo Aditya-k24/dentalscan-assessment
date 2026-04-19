@@ -142,6 +142,11 @@ export default function ScanningFlow() {
     router.push(`/results/${scanId}`);
   }, [router]);
 
+  // Trigger scan completion when all 5 steps are captured
+  useEffect(() => {
+    if (currentStep === 5) handleScanComplete();
+  }, [currentStep, handleScanComplete]);
+
   const handleCapture = useCallback(() => {
     const video = videoRef.current;
     if (!video || qualityTier === "poor") return;
@@ -154,17 +159,14 @@ export default function ScanningFlow() {
     canvas.toBlob((blob) => {
       if (!blob) return;
       const url = URL.createObjectURL(blob);
+      const nextStep = currentStep + 1;
       setCapturedImages((prev) => [...prev, url]);
-      setCurrentStep((prev) => {
-        const next = prev + 1;
-        if (next < 5) setShowPreview(true);
-        if (next === 5) handleScanComplete();
-        return next;
-      });
+      setCurrentStep(nextStep);
+      if (nextStep < 5) setShowPreview(true);
     }, "image/jpeg", 0.85);
-  }, [qualityTier, handleScanComplete]);
+  }, [qualityTier, currentStep]);
 
-  const isCaptureLocked = qualityTier === "poor";
+  const isCaptureLocked = qualityTier === "poor" || showPreview;
   const isComplete = currentStep >= 5;
   const isReady = qualityTier === "good";
 
@@ -249,9 +251,9 @@ export default function ScanningFlow() {
               </span>
             </div>
 
-            {/* Step preview demo — shown on step start */}
+            {/* Step preview — key forces remount on each step so animations restart */}
             {showPreview && (
-              <StepPreview step={currentStep} onDismiss={() => setShowPreview(false)} />
+              <StepPreview key={currentStep} step={currentStep} onDismiss={() => setShowPreview(false)} />
             )}
 
             {/* Instruction glass card */}
